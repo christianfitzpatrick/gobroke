@@ -38,6 +38,11 @@ func (b *Binding) MatchTopicString(routingKey string) bool {
 	return b.topicStringRegex.MatchString(routingKey)
 }
 
+// Equal implements `==` for two Bindings.
+func (b *Binding) Equal(other *Binding) bool {
+	return b.QueueName == other.QueueName && b.RoutingKey == other.RoutingKey && b.topicStringRegex == other.topicStringRegex
+}
+
 // generateTopicStringRegex returns a regex to match against routing patterns.
 func generateTopicStringRegex(key string) (*regexp.Regexp, error) {
 	keys := strings.Split(key, ".")

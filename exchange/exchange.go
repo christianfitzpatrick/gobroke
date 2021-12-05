@@ -12,12 +12,14 @@ import (
 
 // Exchange receives messages from producer applications and
 // optionally routes these to message queues within the server.
+// NOTE: As of now, the only exchange type implemented is the topic exchange pattern.
+// NOTE: We also implement just the default exchange.
 type Exchange struct {
 	knownBindings []*binding.Binding
 	mu            sync.Mutex
 }
 
-// NewExchange initializes the broker's message exchange.
+// NewExchange initializes the broker's default message exchange.
 func NewExchange() *Exchange {
 	bindings := make([]*binding.Binding, 0)
 
@@ -29,6 +31,26 @@ func (e *Exchange) AddBinding(bind *binding.Binding) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
-	// @FromSpec TODO: ignore duplicate bindings
+	// @FromSpec: ignore duplicate bindings
+	for _, b := range e.knownBindings {
+		if bind.Equal(b) {
+			return
+		}
+	}
+
 	e.knownBindings = append(e.knownBindings, bind)
+}
+
+// DropBinding removes a binding from the exchange.
+func (e *Exchange) DropBinding(bind *binding.Binding) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	for idx, b := range e.knownBindings {
+		if bind.Equal(b) {
+			e.knownBindings = append(e.knownBindings[:idx], e.knownBindings[idx+1:]...)
+
+			return
+		}
+	}
 }
