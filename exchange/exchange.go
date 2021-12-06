@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/christianfitzpatrick/gobroke/binding"
+	"github.com/christianfitzpatrick/gobroke/message"
 )
 
 // Exchange receives messages from producer applications and
@@ -51,6 +52,15 @@ func (e *Exchange) DropBinding(bind *binding.Binding) {
 			e.knownBindings = append(e.knownBindings[:idx], e.knownBindings[idx+1:]...)
 
 			return
+		}
+	}
+}
+
+// GetSubscribedQueues identifies the relevant queues for a client service subscription.
+func (e *Exchange) GetSubscribedQueues(msg *message.Message) {
+	for _, b := range e.knownBindings {
+		if b.MatchTopicString(msg.RoutingKey) {
+			// TODO: Implement subscriber matching
 		}
 	}
 }
