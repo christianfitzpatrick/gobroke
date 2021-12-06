@@ -5,6 +5,7 @@ The AMQP 0-9-1 spec:
 https://www.rabbitmq.com/protocol.html
 
 NOTES:
+
 As of now, the main focus is implementing pub/sub messaging semantics
 
 Currently, routing is based on regular expression matching, but more sophisticated approaches are documented in the RabbitMQ blog:
