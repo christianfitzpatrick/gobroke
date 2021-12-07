@@ -60,11 +60,19 @@ func (e *Exchange) DropBinding(bind *binding.Binding) {
 func (e *Exchange) GetMatchingQueues(msg *message.Message) []string {
 	matches := make([]string, 0)
 
-	for _, b := range e.knownBindings {
+	for _, b := range e.GetBindingsSafe() {
 		if b.MatchTopicString(msg.RoutingKey) {
 			matches = append(matches, b.QueueName)
 		}
 	}
 
 	return matches
+}
+
+// GetBindingsSafe safely returns an exchange's bindings.
+func (e *Exchange) GetBindingsSafe() []*binding.Binding {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	return e.knownBindings
 }
