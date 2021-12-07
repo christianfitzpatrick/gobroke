@@ -56,11 +56,15 @@ func (e *Exchange) DropBinding(bind *binding.Binding) {
 	}
 }
 
-// GetSubscribedQueues identifies the relevant queues for a client service subscription.
-func (e *Exchange) GetSubscribedQueues(msg *message.Message) {
+// GetMatchingQueues identifies the relevant queues based on message's routing key.
+func (e *Exchange) GetMatchingQueues(msg *message.Message) []string {
+	matches := make([]string, 0)
+
 	for _, b := range e.knownBindings {
 		if b.MatchTopicString(msg.RoutingKey) {
-			// TODO: Implement subscriber matching
+			matches = append(matches, b.QueueName)
 		}
 	}
+
+	return matches
 }
